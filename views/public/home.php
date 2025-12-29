@@ -120,97 +120,112 @@ $pageTitle = 'Beranda';
     </div>
 </section>
 
-<!-- Featured Posts -->
+<!-- Featured Posts with Dynamic Masonry Layout -->
 <section id="berita" class="posts-section py-5">
     <div class="container">
         <div class="section-header text-center mb-5">
             <h2 class="section-title">Berita & Pengumuman Terbaru</h2>
             <p class="section-subtitle text-muted">Informasi terkini dari sekolah kami</p>
         </div>
-        <div class="row g-4">
-            <?php if (empty($posts)): ?>
-                <div class="col-12">
-                    <div class="text-center py-5">
-                        <i class="bi bi-inbox display-1 text-muted"></i>
-                        <p class="text-muted mt-3">Belum ada berita untuk ditampilkan.</p>
-                    </div>
-                </div>
-            <?php else: ?>
-                <?php foreach ($posts as $post): ?>
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <article class="news-card">
-                            <a href="<?= View::url('/post/' . $post['slug']) ?>" class="text-decoration-none">
-                                <?php 
-                                // Prioritaskan foto, jika tidak ada gunakan featured_image
-                                $imageFile = $post['foto'] ?? $post['featured_image'] ?? null;
-                                if ($imageFile): 
-                                    // Cek apakah foto ada di folder berita atau uploads
-                                    $imagePath = $post['foto'] ? 'images/berita/' . $imageFile : 'uploads/' . $imageFile;
-                                ?>
-                                    <div class="news-card-image">
+        
+        <?php if (empty($posts)): ?>
+            <div class="text-center py-5">
+                <i class="bi bi-inbox display-1 text-muted"></i>
+                <p class="text-muted mt-3">Belum ada berita untuk ditampilkan.</p>
+            </div>
+        <?php else: ?>
+            <!-- Dynamic Masonry Grid -->
+            <div class="news-masonry-grid">
+                <?php 
+                $layoutPatterns = ['featured-large', 'portrait-tall', 'small', 'small', 'landscape-wide', 'standard', 'small', 'portrait-tall', 'standard', 'small', 'landscape-wide', 'small'];
+                foreach ($posts as $index => $post): 
+                    $layoutClass = $layoutPatterns[$index % count($layoutPatterns)];
+                    $imageFile = $post['foto'] ?? $post['featured_image'] ?? null;
+                    $imagePath = $post['foto'] ? 'images/berita/' . $imageFile : 'uploads/' . $imageFile;
+                ?>
+                    <article class="news-masonry-item <?= $layoutClass ?>">
+                        <a href="<?= View::url('/post/' . $post['slug']) ?>" class="news-masonry-link">
+                            <div class="news-masonry-card">
+                                <?php if ($imageFile): ?>
+                                    <div class="news-masonry-image">
                                         <img src="<?= View::asset($imagePath) ?>" alt="<?= e($post['title']) ?>">
+                                        <div class="news-masonry-overlay"></div>
                                     </div>
                                 <?php endif; ?>
-                                <div class="news-card-body">
-                                    <div class="news-card-meta">
-                                        <span class="badge"><?= e($post['category']) ?></span>
-                                        <span class="text-muted">
+                                <div class="news-masonry-content">
+                                    <div class="news-masonry-meta">
+                                        <span class="badge bg-primary"><?= e($post['category']) ?></span>
+                                        <span class="news-date">
                                             <i class="bi bi-calendar3"></i> <?= date('d M Y', strtotime($post['created_at'])) ?>
                                         </span>
                                     </div>
-                                    <h5 class="news-card-title">
+                                    <h3 class="news-masonry-title">
                                         <?= e($post['title']) ?>
-                                    </h5>
-                                    <p class="news-card-text"><?= e($post['excerpt'] ?? substr(strip_tags($post['content']), 0, 120)) ?></p>
-                                    <span class="news-card-link">
+                                    </h3>
+                                    <p class="news-masonry-excerpt">
+                                        <?= e($post['excerpt'] ?? substr(strip_tags($post['content']), 0, 120)) ?>
+                                    </p>
+                                    <span class="news-read-more">
                                         Baca selengkapnya <i class="bi bi-arrow-right"></i>
                                     </span>
                                 </div>
-                            </a>
-                        </article>
-                    </div>
+                            </div>
+                        </a>
+                    </article>
                 <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 
-<!-- Gallery Section -->
+<!-- Gallery Section with Modern Collage -->
 <section id="galeri" class="gallery-section py-5 bg-light">
     <div class="container">
         <div class="section-header text-center mb-5">
             <h2 class="section-title">Galeri Kegiatan</h2>
             <p class="section-subtitle text-muted">Momen-momen terbaik dari kegiatan sekolah</p>
         </div>
-        <div class="row g-3">
-            <?php if (empty($gallery)): ?>
-                <div class="col-12">
-                    <div class="text-center py-5">
-                        <i class="bi bi-image display-1 text-muted"></i>
-                        <p class="text-muted mt-3">Belum ada foto di galeri.</p>
-                    </div>
-                </div>
-            <?php else: ?>
+        
+        <?php if (empty($gallery)): ?>
+            <div class="text-center py-5">
+                <i class="bi bi-image display-1 text-muted"></i>
+                <p class="text-muted mt-3">Belum ada foto di galeri.</p>
+            </div>
+        <?php else: ?>
+            <!-- Modern Collage Grid -->
+            <div class="gallery-collage-grid">
                 <?php 
-                $displayGallery = array_slice($gallery, 0, 6); // Show only 6 items
-                foreach ($displayGallery as $item): 
+                $displayGallery = array_slice($gallery, 0, 12);
+                $collagePatterns = ['landscape-big', 'portrait', 'square', 'square', 'landscape', 'portrait-big', 'square', 'landscape', 'square', 'portrait', 'landscape-big', 'square'];
+                foreach ($displayGallery as $index => $item): 
+                    $layoutClass = $collagePatterns[$index % count($collagePatterns)];
                 ?>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="gallery-item">
+                    <div class="gallery-collage-item <?= $layoutClass ?>" data-aos="fade-up" data-aos-delay="<?= $index * 50 ?>">
+                        <div class="gallery-collage-card">
                             <img src="<?= View::asset('uploads/' . $item['image']) ?>" alt="<?= e($item['title']) ?>">
-                            <div class="gallery-overlay">
-                                <div class="gallery-content">
-                                    <h5><?= e($item['title']) ?></h5>
+                            <div class="gallery-collage-overlay">
+                                <div class="gallery-collage-content">
+                                    <div class="gallery-icon">
+                                        <i class="bi bi-zoom-in"></i>
+                                    </div>
+                                    <h5 class="gallery-title"><?= e($item['title']) ?></h5>
                                     <?php if ($item['description']): ?>
-                                        <p><?= e(substr($item['description'], 0, 80)) ?>...</p>
+                                        <p class="gallery-description"><?= e(substr($item['description'], 0, 100)) ?><?= strlen($item['description']) > 100 ? '...' : '' ?></p>
                                     <?php endif; ?>
                                 </div>
                             </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
+            </div>
+            
+            <!-- View All Button -->
+            <div class="text-center mt-5">
+                <a href="<?= View::url('/gallery') ?>" class="btn btn-primary btn-lg px-5">
+                    <i class="bi bi-images me-2"></i> Lihat Semua Galeri
+                </a>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 
@@ -257,3 +272,468 @@ $pageTitle = 'Beranda';
     </div>
 </section>
 
+<style>
+/* News Masonry Grid Styles */
+.news-masonry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    grid-auto-flow: dense;
+}
+
+/* Layout Variations */
+.news-masonry-item.featured-large {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+.news-masonry-item.portrait-tall {
+    grid-row: span 2;
+}
+
+.news-masonry-item.landscape-wide {
+    grid-column: span 2;
+}
+
+.news-masonry-item.standard {
+    grid-column: span 1;
+    grid-row: span 1;
+}
+
+.news-masonry-item.small {
+    grid-column: span 1;
+    grid-row: span 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .news-masonry-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .news-masonry-item.featured-large {
+        grid-column: span 2;
+        grid-row: span 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .news-masonry-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .news-masonry-item.featured-large,
+    .news-masonry-item.portrait-tall,
+    .news-masonry-item.landscape-wide {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+}
+
+/* Card Styles */
+.news-masonry-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+}
+
+.news-masonry-card {
+    position: relative;
+    height: 100%;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.news-masonry-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Image Container */
+.news-masonry-image {
+    position: relative;
+    width: 100%;
+    padding-bottom: 60%;
+    overflow: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.featured-large .news-masonry-image {
+    padding-bottom: 50%;
+}
+
+.portrait-tall .news-masonry-image {
+    padding-bottom: 120%;
+}
+
+.landscape-wide .news-masonry-image {
+    padding-bottom: 45%;
+}
+
+.small .news-masonry-image {
+    padding-bottom: 65%;
+}
+
+.news-masonry-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.news-masonry-card:hover .news-masonry-image img {
+    transform: scale(1.08);
+}
+
+.news-masonry-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.news-masonry-card:hover .news-masonry-overlay {
+    opacity: 1;
+}
+
+/* Content Area */
+.news-masonry-content {
+    padding: 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.featured-large .news-masonry-content {
+    padding: 32px;
+}
+
+.small .news-masonry-content {
+    padding: 16px;
+}
+
+/* Meta Information */
+.news-masonry-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.news-masonry-meta .badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.news-date {
+    font-size: 0.875rem;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Title */
+.news-masonry-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    color: #1a1a1a;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.featured-large .news-masonry-title {
+    font-size: 1.75rem;
+    -webkit-line-clamp: 4;
+}
+
+.portrait-tall .news-masonry-title {
+    font-size: 1.4rem;
+}
+
+.small .news-masonry-title {
+    font-size: 1rem;
+    -webkit-line-clamp: 2;
+    margin-bottom: 8px;
+}
+
+/* Excerpt */
+.news-masonry-excerpt {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #6c757d;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+}
+
+.featured-large .news-masonry-excerpt {
+    -webkit-line-clamp: 4;
+    font-size: 1rem;
+}
+
+.standard .news-masonry-excerpt {
+    -webkit-line-clamp: 2;
+}
+
+.small .news-masonry-excerpt {
+    display: none;
+}
+
+/* Read More Link */
+.news-read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #667eea;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: gap 0.3s ease;
+}
+
+.small .news-read-more {
+    font-size: 0.8rem;
+}
+
+.news-masonry-card:hover .news-read-more {
+    gap: 10px;
+}
+
+.news-read-more i {
+    transition: transform 0.3s ease;
+}
+
+.news-masonry-card:hover .news-read-more i {
+    transform: translateX(4px);
+}
+
+/* ===========================
+   GALLERY COLLAGE STYLES
+   =========================== */
+
+.gallery-collage-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    grid-auto-flow: dense;
+}
+
+/* Gallery Layout Variations */
+.gallery-collage-item.landscape-big {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+.gallery-collage-item.portrait-big {
+    grid-column: span 1;
+    grid-row: span 2;
+}
+
+.gallery-collage-item.portrait {
+    grid-column: span 1;
+    grid-row: span 2;
+}
+
+.gallery-collage-item.landscape {
+    grid-column: span 2;
+    grid-row: span 1;
+}
+
+.gallery-collage-item.square {
+    grid-column: span 1;
+    grid-row: span 1;
+}
+
+/* Responsive Gallery Grid */
+@media (max-width: 1200px) {
+    .gallery-collage-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .gallery-collage-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .gallery-collage-item.landscape-big {
+        grid-column: span 2;
+        grid-row: span 1;
+    }
+}
+
+@media (max-width: 576px) {
+    .gallery-collage-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .gallery-collage-item.landscape-big,
+    .gallery-collage-item.portrait-big,
+    .gallery-collage-item.portrait,
+    .gallery-collage-item.landscape {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+}
+
+/* Gallery Card Styles */
+.gallery-collage-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gallery-collage-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.gallery-collage-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gallery-collage-card:hover img {
+    transform: scale(1.1);
+}
+
+/* Gallery Overlay */
+.gallery-collage-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.3) 50%,
+        rgba(0, 0, 0, 0.9) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    display: flex;
+    align-items: flex-end;
+}
+
+.gallery-collage-card:hover .gallery-collage-overlay {
+    opacity: 1;
+}
+
+/* Gallery Content */
+.gallery-collage-content {
+    padding: 24px;
+    width: 100%;
+    transform: translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gallery-collage-card:hover .gallery-collage-content {
+    transform: translateY(0);
+}
+
+.gallery-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+
+.gallery-collage-card:hover .gallery-icon {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.gallery-icon i {
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.gallery-title {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.gallery-description {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Small items: Hide description */
+.gallery-collage-item.square .gallery-description {
+    display: none;
+}
+
+.gallery-collage-item.square .gallery-title {
+    font-size: 0.95rem;
+}
+
+.gallery-collage-item.square .gallery-collage-content {
+    padding: 16px;
+}
+
+/* Large items: Bigger content */
+.gallery-collage-item.landscape-big .gallery-title {
+    font-size: 1.5rem;
+}
+
+.gallery-collage-item.landscape-big .gallery-description {
+    font-size: 1rem;
+}
+
+.gallery-collage-item.landscape-big .gallery-icon {
+    width: 56px;
+    height: 56px;
+}
+
+.gallery-collage-item.landscape-big .gallery-icon i {
+    font-size: 1.75rem;
+}
+
+</style>
