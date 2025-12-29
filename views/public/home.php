@@ -136,14 +136,23 @@ $pageTitle = 'Beranda';
         <?php else: ?>
             <!-- Dynamic Masonry Grid -->
             <div class="news-masonry-grid">
-                <?php 
-                $layoutPatterns = ['featured-large', 'portrait-tall', 'small', 'small', 'landscape-wide', 'standard', 'small', 'portrait-tall', 'standard', 'small', 'landscape-wide', 'small'];
-                foreach ($posts as $index => $post): 
-                    $layoutClass = $layoutPatterns[$index % count($layoutPatterns)];
+                <?php foreach ($posts as $index => $post): 
+                    // Get type from database, default to landscape if not set
+                    $type = $post['type'] ?? 'landscape';
+                    
+                    // Map type to layout class
+                    $layoutClassMap = [
+                        'portrait' => 'portrait-tall',
+                        'landscape' => 'landscape-wide',
+                        'square' => 'standard'
+                    ];
+                    $layoutClass = $layoutClassMap[$type] ?? 'standard';
+                    
+                    // Get image file
                     $imageFile = $post['foto'] ?? $post['featured_image'] ?? null;
                     $imagePath = $post['foto'] ? 'images/berita/' . $imageFile : 'uploads/' . $imageFile;
                 ?>
-                    <article class="news-masonry-item <?= $layoutClass ?>">
+                    <article class="news-masonry-item <?= $layoutClass ?>" data-type="<?= e($type) ?>">
                         <a href="<?= View::url('/post/' . $post['slug']) ?>" class="news-masonry-link">
                             <div class="news-masonry-card">
                                 <?php if ($imageFile): ?>
@@ -196,11 +205,19 @@ $pageTitle = 'Beranda';
             <div class="gallery-collage-grid">
                 <?php 
                 $displayGallery = array_slice($gallery, 0, 12);
-                $collagePatterns = ['landscape-big', 'portrait', 'square', 'square', 'landscape', 'portrait-big', 'square', 'landscape', 'square', 'portrait', 'landscape-big', 'square'];
                 foreach ($displayGallery as $index => $item): 
-                    $layoutClass = $collagePatterns[$index % count($collagePatterns)];
+                    // Get type from database, default to square if not set
+                    $type = $item['type'] ?? 'square';
+                    
+                    // Map type to layout class
+                    $layoutClassMap = [
+                        'portrait' => 'portrait',
+                        'landscape' => 'landscape',
+                        'square' => 'square'
+                    ];
+                    $layoutClass = $layoutClassMap[$type] ?? 'square';
                 ?>
-                    <div class="gallery-collage-item <?= $layoutClass ?>" data-aos="fade-up" data-aos-delay="<?= $index * 50 ?>">
+                    <div class="gallery-collage-item <?= $layoutClass ?>" data-type="<?= e($type) ?>" data-aos="fade-up" data-aos-delay="<?= $index * 50 ?>">
                         <div class="gallery-collage-card">
                             <img src="<?= View::asset('uploads/' . $item['image']) ?>" alt="<?= e($item['title']) ?>">
                             <div class="gallery-collage-overlay">
@@ -209,7 +226,7 @@ $pageTitle = 'Beranda';
                                         <i class="bi bi-zoom-in"></i>
                                     </div>
                                     <h5 class="gallery-title"><?= e($item['title']) ?></h5>
-                                    <?php if ($item['description']): ?>
+                                    <?php if (!empty($item['description'])): ?>
                                         <p class="gallery-description"><?= e(substr($item['description'], 0, 100)) ?><?= strlen($item['description']) > 100 ? '...' : '' ?></p>
                                     <?php endif; ?>
                                 </div>
@@ -273,7 +290,9 @@ $pageTitle = 'Beranda';
 </section>
 
 <style>
-/* News Masonry Grid Styles */
+/* ===========================
+   NEWS MASONRY GRID STYLES
+   =========================== */
 .news-masonry-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -281,12 +300,7 @@ $pageTitle = 'Beranda';
     grid-auto-flow: dense;
 }
 
-/* Layout Variations */
-.news-masonry-item.featured-large {
-    grid-column: span 2;
-    grid-row: span 2;
-}
-
+/* Layout Variations Based on Type */
 .news-masonry-item.portrait-tall {
     grid-row: span 2;
 }
@@ -300,20 +314,14 @@ $pageTitle = 'Beranda';
     grid-row: span 1;
 }
 
-.news-masonry-item.small {
-    grid-column: span 1;
-    grid-row: span 1;
-}
-
-/* Responsive adjustments */
+/* Responsive Adjustments */
 @media (max-width: 992px) {
     .news-masonry-grid {
         grid-template-columns: repeat(2, 1fr);
     }
     
-    .news-masonry-item.featured-large {
+    .news-masonry-item.landscape-wide {
         grid-column: span 2;
-        grid-row: span 1;
     }
 }
 
@@ -322,7 +330,6 @@ $pageTitle = 'Beranda';
         grid-template-columns: 1fr;
     }
     
-    .news-masonry-item.featured-large,
     .news-masonry-item.portrait-tall,
     .news-masonry-item.landscape-wide {
         grid-column: span 1;
@@ -364,10 +371,7 @@ $pageTitle = 'Beranda';
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.featured-large .news-masonry-image {
-    padding-bottom: 50%;
-}
-
+/* Image Aspect Ratios Based on Type */
 .portrait-tall .news-masonry-image {
     padding-bottom: 120%;
 }
@@ -376,7 +380,7 @@ $pageTitle = 'Beranda';
     padding-bottom: 45%;
 }
 
-.small .news-masonry-image {
+.standard .news-masonry-image {
     padding-bottom: 65%;
 }
 
@@ -417,12 +421,9 @@ $pageTitle = 'Beranda';
     flex-direction: column;
 }
 
-.featured-large .news-masonry-content {
-    padding: 32px;
-}
-
-.small .news-masonry-content {
-    padding: 16px;
+/* Content Padding Based on Type */
+.standard .news-masonry-content {
+    padding: 24px;
 }
 
 /* Meta Information */
@@ -464,19 +465,17 @@ $pageTitle = 'Beranda';
     overflow: hidden;
 }
 
-.featured-large .news-masonry-title {
-    font-size: 1.75rem;
-    -webkit-line-clamp: 4;
-}
-
+/* Title Sizes Based on Type */
 .portrait-tall .news-masonry-title {
     font-size: 1.4rem;
 }
 
-.small .news-masonry-title {
-    font-size: 1rem;
-    -webkit-line-clamp: 2;
-    margin-bottom: 8px;
+.landscape-wide .news-masonry-title {
+    font-size: 1.3rem;
+}
+
+.standard .news-masonry-title {
+    font-size: 1.25rem;
 }
 
 /* Excerpt */
@@ -492,17 +491,17 @@ $pageTitle = 'Beranda';
     flex: 1;
 }
 
-.featured-large .news-masonry-excerpt {
+/* Excerpt Based on Type */
+.portrait-tall .news-masonry-excerpt {
     -webkit-line-clamp: 4;
-    font-size: 1rem;
+}
+
+.landscape-wide .news-masonry-excerpt {
+    -webkit-line-clamp: 3;
 }
 
 .standard .news-masonry-excerpt {
     -webkit-line-clamp: 2;
-}
-
-.small .news-masonry-excerpt {
-    display: none;
 }
 
 /* Read More Link */
@@ -516,9 +515,7 @@ $pageTitle = 'Beranda';
     transition: gap 0.3s ease;
 }
 
-.small .news-read-more {
-    font-size: 0.8rem;
-}
+/* Read More Link */
 
 .news-masonry-card:hover .news-read-more {
     gap: 10px;
@@ -543,17 +540,7 @@ $pageTitle = 'Beranda';
     grid-auto-flow: dense;
 }
 
-/* Gallery Layout Variations */
-.gallery-collage-item.landscape-big {
-    grid-column: span 2;
-    grid-row: span 2;
-}
-
-.gallery-collage-item.portrait-big {
-    grid-column: span 1;
-    grid-row: span 2;
-}
-
+/* Gallery Layout Variations Based on Type */
 .gallery-collage-item.portrait {
     grid-column: span 1;
     grid-row: span 2;
@@ -582,9 +569,8 @@ $pageTitle = 'Beranda';
         gap: 12px;
     }
     
-    .gallery-collage-item.landscape-big {
+    .gallery-collage-item.landscape {
         grid-column: span 2;
-        grid-row: span 1;
     }
 }
 
@@ -593,8 +579,6 @@ $pageTitle = 'Beranda';
         grid-template-columns: 1fr;
     }
     
-    .gallery-collage-item.landscape-big,
-    .gallery-collage-item.portrait-big,
     .gallery-collage-item.portrait,
     .gallery-collage-item.landscape {
         grid-column: span 1;
@@ -718,22 +702,13 @@ $pageTitle = 'Beranda';
     padding: 16px;
 }
 
-/* Large items: Bigger content */
-.gallery-collage-item.landscape-big .gallery-title {
-    font-size: 1.5rem;
+/* Gallery Content Based on Type */
+.gallery-collage-item.landscape .gallery-title {
+    font-size: 1.2rem;
 }
 
-.gallery-collage-item.landscape-big .gallery-description {
-    font-size: 1rem;
-}
-
-.gallery-collage-item.landscape-big .gallery-icon {
-    width: 56px;
-    height: 56px;
-}
-
-.gallery-collage-item.landscape-big .gallery-icon i {
-    font-size: 1.75rem;
+.gallery-collage-item.portrait .gallery-title {
+    font-size: 1.1rem;
 }
 
 </style>

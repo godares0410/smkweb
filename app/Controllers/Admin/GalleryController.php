@@ -38,6 +38,7 @@ class GalleryController extends Controller {
             'description' => Request::post('description'),
             'image' => $uploadResult,
             'category' => Request::post('category'),
+            'type' => Request::post('type', 'square'),
             'status' => Request::post('status', 'active')
         ];
 
@@ -65,6 +66,7 @@ class GalleryController extends Controller {
             'title' => Request::post('title'),
             'description' => Request::post('description'),
             'category' => Request::post('category'),
+            'type' => Request::post('type', 'square'),
             'status' => Request::post('status', 'active')
         ];
 

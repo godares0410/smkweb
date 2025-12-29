@@ -26,6 +26,7 @@ class PostController extends Controller {
             'excerpt' => Request::post('excerpt'),
             'category' => Request::post('category'),
             'author_id' => Auth::id(),
+            'type' => Request::post('type', 'landscape'),
             'status' => Request::post('status', 'draft')
         ];
 
@@ -68,6 +69,7 @@ class PostController extends Controller {
             'content' => Request::post('content'),
             'excerpt' => Request::post('excerpt'),
             'category' => Request::post('category'),
+            'type' => Request::post('type', 'landscape'),
             'status' => Request::post('status', 'draft')
         ];
 

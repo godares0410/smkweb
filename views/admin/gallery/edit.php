@@ -36,6 +36,19 @@ $layout = 'admin';
     </div>
     
     <div class="mb-3">
+        <label class="form-label">Tipe Layout</label>
+        <select name="type" class="form-select">
+            <?php 
+            $currentType = $item['type'] ?? 'square';
+            ?>
+            <option value="portrait" <?= $currentType === 'portrait' ? 'selected' : '' ?>>Portrait (Vertikal)</option>
+            <option value="landscape" <?= $currentType === 'landscape' ? 'selected' : '' ?>>Landscape (Horizontal)</option>
+            <option value="square" <?= $currentType === 'square' ? 'selected' : '' ?>>Square (Persegi)</option>
+        </select>
+        <small class="form-text text-muted">Pilih tipe layout untuk menampilkan foto di galeri</small>
+    </div>
+    
+    <div class="mb-3">
         <label class="form-label">Status</label>
         <select name="status" class="form-select">
             <option value="active" <?= $item['status'] === 'active' ? 'selected' : '' ?>>Active</option>
