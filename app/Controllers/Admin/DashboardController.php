@@ -14,18 +14,26 @@ class DashboardController extends Controller {
     }
 
     public function index() {
+        $allPosts = $this->postModel->getAll();
         $stats = [
-            'posts' => count($this->postModel->getAll()),
+            'posts' => count($allPosts),
             'pages' => count($this->pageModel->getAll()),
             'gallery' => count($this->galleryModel->getAll()),
             'published_posts' => count($this->postModel->getPublished())
         ];
 
-        $recentPosts = array_slice($this->postModel->getAll(), 0, 5);
+        // Get recent posts, but verify they exist (in case of database inconsistencies)
+        $recentPosts = array_slice($allPosts, 0, 5);
+        $verifiedPosts = [];
+        foreach ($recentPosts as $post) {
+            if ($this->postModel->findById($post['id'])) {
+                $verifiedPosts[] = $post;
+            }
+        }
 
         $this->view('admin.dashboard', [
             'stats' => $stats,
-            'recentPosts' => $recentPosts
+            'recentPosts' => $verifiedPosts
         ]);
     }
 }

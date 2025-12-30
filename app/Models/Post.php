@@ -7,13 +7,34 @@ class Post {
         $this->db = Database::getInstance();
     }
 
-    public function getAll() {
-        return $this->db->fetchAll(
-            "SELECT p.*, a.name as author_name 
-             FROM posts p 
-             LEFT JOIN admins a ON p.author_id = a.id 
-             ORDER BY p.id DESC"
-        );
+    public function getAll($filters = []) {
+        $sql = "SELECT p.*, a.name as author_name 
+                FROM posts p 
+                LEFT JOIN admins a ON p.author_id = a.id 
+                WHERE 1=1";
+        $params = [];
+        
+        // Search by title
+        if (!empty($filters['search'])) {
+            $sql .= " AND p.title LIKE :search";
+            $params['search'] = '%' . $filters['search'] . '%';
+        }
+        
+        // Filter by category
+        if (!empty($filters['category'])) {
+            $sql .= " AND p.category = :category";
+            $params['category'] = $filters['category'];
+        }
+        
+        // Filter by status
+        if (!empty($filters['status'])) {
+            $sql .= " AND p.status = :status";
+            $params['status'] = $filters['status'];
+        }
+        
+        $sql .= " ORDER BY p.id DESC";
+        
+        return $this->db->fetchAll($sql, $params);
     }
 
     public function getPublished($limit = null) {
@@ -29,13 +50,20 @@ class Post {
     }
 
     public function findById($id) {
-        return $this->db->fetchOne(
+        // Ensure ID is integer
+        $id = (int)$id;
+        error_log("Post::findById called with ID: " . $id);
+        
+        $result = $this->db->fetchOne(
             "SELECT p.*, a.name as author_name 
              FROM posts p 
              LEFT JOIN admins a ON p.author_id = a.id 
              WHERE p.id = :id",
             ['id' => $id]
         );
+        
+        error_log("Post::findById result: " . ($result ? 'found' : 'not found'));
+        return $result;
     }
 
     public function findBySlug($slug) {

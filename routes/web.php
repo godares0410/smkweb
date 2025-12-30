@@ -82,46 +82,62 @@ $router->get('/admin/dashboard', [
     'middleware' => ['auth']
 ]);
 
-// Admin Routes - Posts
+// Admin Routes - Posts (RESTful Resource Routes)
+// Urutan penting: route yang lebih spesifik harus didefinisikan lebih dulu
+
+// Index - GET /admin/posts
 $router->get('/admin/posts', [
     'controller' => 'PostController',
     'action' => 'index',
     'middleware' => ['auth']
 ]);
 
+// Create - GET /admin/posts/create (harus sebelum {id})
 $router->get('/admin/posts/create', [
     'controller' => 'PostController',
     'action' => 'create',
     'middleware' => ['auth']
 ]);
 
+// Store - POST /admin/posts
 $router->post('/admin/posts', [
     'controller' => 'PostController',
     'action' => 'store',
     'middleware' => ['auth']
 ]);
 
+// Edit - GET /admin/posts/{id}/edit (harus sebelum {id})
 $router->get('/admin/posts/{id}/edit', [
     'controller' => 'PostController',
     'action' => 'edit',
     'middleware' => ['auth']
 ]);
 
+// Update - POST /admin/posts/{id} (harus sebelum GET {id} untuk menghindari konflik)
 $router->post('/admin/posts/{id}', [
     'controller' => 'PostController',
     'action' => 'update',
     'middleware' => ['auth']
 ]);
 
+// Update - PUT/PATCH /admin/posts/{id} (untuk method override)
 $router->put('/admin/posts/{id}', [
     'controller' => 'PostController',
     'action' => 'update',
     'middleware' => ['auth']
 ]);
 
+// Show - GET /admin/posts/{id} (untuk API/JSON response) - HARUS TERAKHIR
+$router->get('/admin/posts/{id}', [
+    'controller' => 'PostController',
+    'action' => 'show',
+    'middleware' => ['auth']
+]);
+
+// Destroy - DELETE /admin/posts/{id}
 $router->delete('/admin/posts/{id}', [
     'controller' => 'PostController',
-    'action' => 'delete',
+    'action' => 'destroy',
     'middleware' => ['auth']
 ]);
 

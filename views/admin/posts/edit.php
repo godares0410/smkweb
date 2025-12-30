@@ -29,7 +29,8 @@ $layout = 'admin';
     
     <div class="mb-3">
         <label class="form-label">Konten</label>
-        <textarea name="content" class="form-control" rows="10" required><?= e($post['content']) ?></textarea>
+        <textarea name="content" id="content" class="form-control" rows="15" required><?= e($post['content']) ?></textarea>
+        <small class="form-text text-muted">Gunakan editor untuk memformat konten berita</small>
     </div>
     
     <?php if ($post['featured_image']): ?>
@@ -52,9 +53,14 @@ $layout = 'admin';
     </div>
     
     <div class="mb-3">
-        <label class="form-label">Foto Berita (dari folder berita)</label>
+        <label class="form-label">Foto Berita</label>
+        <div class="mb-2">
+            <input type="file" name="foto_upload" class="form-control" accept="image/*">
+            <small class="form-text text-muted">Upload foto baru (JPG, PNG, GIF, WEBP - maks. 5MB). Kosongkan jika tidak ingin mengubah.</small>
+        </div>
+        <div class="text-muted mb-2" style="font-size: 0.9em;">ATAU</div>
         <select name="foto" class="form-select">
-            <option value="">-- Pilih Foto --</option>
+            <option value="">-- Pilih Foto yang Sudah Ada --</option>
             <?php 
             $beritaImages = getBeritaImages();
             $currentFoto = $post['foto'] ?? '';
@@ -63,7 +69,7 @@ $layout = 'admin';
                 <option value="<?= e($image) ?>" <?= $currentFoto === $image ? 'selected' : '' ?>><?= e($image) ?></option>
             <?php endforeach; ?>
         </select>
-        <small class="form-text text-muted">Pilih foto dari folder berita yang sudah tersedia. Upload foto baru melalui script download_berita_images.php</small>
+        <small class="form-text text-muted">Pilih foto dari folder berita yang sudah tersedia</small>
     </div>
     
     <div class="mb-3">
@@ -90,4 +96,27 @@ $layout = 'admin';
     <button type="submit" class="btn btn-primary">Update</button>
     <a href="<?= View::url('/admin/posts') ?>" class="btn btn-secondary">Batal</a>
 </form>
+
+<!-- TinyMCE Editor -->
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+tinymce.init({
+    selector: '#content',
+    height: 500,
+    menubar: true,
+    plugins: [
+        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+        'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+    ],
+    toolbar: 'undo redo | formatselect | ' +
+        'bold italic backcolor | alignleft aligncenter ' +
+        'alignright alignjustify | bullist numlist outdent indent | ' +
+        'removeformat | help | code',
+    content_style: 'body { font-family: Arial, sans-serif; font-size: 14px; }',
+    language: 'id',
+    branding: false,
+    promotion: false
+});
+</script>
 

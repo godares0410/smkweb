@@ -35,8 +35,9 @@ class Router {
     public function dispatch() {
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         
-        // Handle method override for PUT/DELETE
+        // Handle method override for PUT/DELETE (like absensi)
         if ($method === 'POST') {
+            // Check both $_POST and php://input for _method (in case of file uploads)
             if (isset($_POST['_method'])) {
                 $method = strtoupper($_POST['_method']);
             } elseif (isset($_REQUEST['_method'])) {
@@ -57,12 +58,32 @@ class Router {
         }
         $uri = $uri ?: '/';
         
+        // Debug logging for AJAX requests
         $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+        if ($isAjax) {
+            error_log("=== ROUTER DISPATCH ===");
+            error_log("Method: $method");
+            error_log("URI: $uri");
+            error_log("BasePath: $basePath");
+            error_log("REQUEST_URI: " . ($_SERVER['REQUEST_URI'] ?? 'N/A'));
+            error_log("Total routes: " . count($this->routes));
+        }
 
-        foreach ($this->routes as $route) {
+        foreach ($this->routes as $routeIndex => $route) {
             if ($route['method'] === $method) {
                 $pattern = $this->convertToRegex($route['path']);
+                if ($isAjax) {
+                    error_log("Checking route #$routeIndex: {$route['method']} {$route['path']} -> Pattern: $pattern");
+                }
                 if (preg_match($pattern, $uri, $matches)) {
+                    if ($isAjax) {
+                        error_log("✓ Route MATCHED: {$route['method']} {$route['path']}");
+                        error_log("✓✓✓ Route MATCHED ✓✓✓");
+                        error_log("Route Path: {$route['path']}");
+                        error_log("Controller: " . ($route['handler']['controller'] ?? 'Closure'));
+                        error_log("Action: " . ($route['handler']['action'] ?? 'N/A'));
+                        error_log("Matches: " . print_r($matches, true));
+                    }
                     array_shift($matches);
                     
                     $handler = $route['handler'];
@@ -79,7 +100,10 @@ class Router {
                             if (isset($this->middleware[$mw])) {
                                 $middlewareResult = $this->middleware[$mw]();
                                 if ($middlewareResult === false) {
-                                    return;
+                                    if ($isAjax) {
+                                        error_log("Middleware $mw blocked the request");
+                                    }
+                                    return; // Middleware blocked the request
                                 }
                             }
                         }
@@ -106,6 +130,10 @@ class Router {
                     if (class_exists($controller)) {
                         $controllerInstance = new $controller();
                         if (method_exists($controllerInstance, $action)) {
+                            if ($isAjax) {
+                                error_log("Calling controller method: $controller::$action");
+                            }
+                            
                             // Clear any output buffers before calling controller method
                             while (ob_get_level() > 0) {
                                 ob_end_clean();
@@ -113,22 +141,42 @@ class Router {
                             
                             call_user_func_array([$controllerInstance, $action], $matches);
                             return;
+                        } else {
+                            if ($isAjax) {
+                                error_log("Method $action does not exist in $controller");
+                            }
+                        }
+                    } else {
+                        if ($isAjax) {
+                            error_log("Controller class $controller does not exist. Tried: " . ($controllerFile ?? 'N/A'));
                         }
                     }
                 }
             }
         }
 
-        // 404 Not Found
+        // Check if this is an AJAX request
         $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
         
         if ($isAjax) {
+            error_log("=== NO ROUTE MATCHED ===");
+            error_log("Method: $method, URI: $uri");
+            error_log("Available routes for $method:");
+            foreach ($this->routes as $r) {
+                if ($r['method'] === $method) {
+                    error_log("  - {$r['path']}");
+                }
+            }
+            error_log("========================");
+            
+            // Clear output buffers
             while (ob_get_level() > 0) {
                 ob_end_clean();
             }
+            
             http_response_code(404);
             header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(['success' => false, 'message' => '404 Not Found']);
+            echo json_encode(['success' => false, 'message' => '404 Not Found - Route tidak ditemukan']);
         } else {
             http_response_code(404);
             echo "404 Not Found";
@@ -140,6 +188,9 @@ class Router {
         return '#^' . $pattern . '$#';
     }
     
+    /**
+     * Get base path of the application
+     */
     private function getBasePath() {
         static $basePath = null;
         
@@ -147,6 +198,7 @@ class Router {
             return $basePath;
         }
         
+        // Try to get from config first
         if (file_exists(__DIR__ . '/../config/app.php')) {
             $config = require __DIR__ . '/../config/app.php';
             if (isset($config['url'])) {
@@ -158,6 +210,7 @@ class Router {
             }
         }
         
+        // Auto-detect from SCRIPT_NAME
         if (isset($_SERVER['SCRIPT_NAME'])) {
             $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
             if ($scriptDir === '/' || $scriptDir === '\\') {
@@ -166,10 +219,10 @@ class Router {
                 $basePath = $scriptDir;
             }
         } else {
+            // Fallback to /smkweb for localhost
             $basePath = '/smkweb';
         }
         
         return $basePath;
     }
 }
-

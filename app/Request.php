@@ -51,5 +51,15 @@ class Request {
     public static function all() {
         return array_merge($_GET, $_POST);
     }
+
+    /**
+     * Check if request wants JSON response (Laravel-style)
+     */
+    public static function wantsJson() {
+        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+        return strpos($accept, 'application/json') !== false || 
+               strpos($accept, 'json') !== false ||
+               self::isAjax();
+    }
 }
 
