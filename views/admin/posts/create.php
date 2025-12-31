@@ -32,27 +32,14 @@ $layout = 'admin';
     </div>
     
     <div class="mb-3">
-        <label class="form-label">Gambar Featured</label>
-        <input type="file" name="featured_image" class="form-control" accept="image/*">
+        <label class="form-label">Foto Berita</label>
+        <input type="file" name="foto_upload" class="form-control" accept="image/*">
+        <small class="form-text text-muted">Upload foto baru (JPG, PNG, GIF, WEBP - maks. 5MB)</small>
     </div>
     
     <div class="mb-3">
-        <label class="form-label">Foto Berita</label>
-        <div class="mb-2">
-            <input type="file" name="foto_upload" class="form-control" accept="image/*">
-            <small class="form-text text-muted">Upload foto baru (JPG, PNG, GIF, WEBP - maks. 5MB)</small>
-        </div>
-        <div class="text-muted mb-2" style="font-size: 0.9em;">ATAU</div>
-        <select name="foto" class="form-select">
-            <option value="">-- Pilih Foto yang Sudah Ada --</option>
-            <?php 
-            $beritaImages = getBeritaImages();
-            foreach ($beritaImages as $image): 
-            ?>
-                <option value="<?= e($image) ?>"><?= e($image) ?></option>
-            <?php endforeach; ?>
-        </select>
-        <small class="form-text text-muted">Pilih foto dari folder berita yang sudah tersedia</small>
+        <label class="form-label">Gambar Featured</label>
+        <input type="file" name="featured_image" class="form-control" accept="image/*">
     </div>
     
     <div class="mb-3">

@@ -33,13 +33,6 @@ $layout = 'admin';
         <small class="form-text text-muted">Gunakan editor untuk memformat konten berita</small>
     </div>
     
-    <?php if ($post['featured_image']): ?>
-        <div class="mb-3">
-            <label class="form-label">Gambar Featured Saat Ini</label><br>
-            <img src="<?= View::asset('uploads/' . $post['featured_image']) ?>" style="max-width: 200px;" class="mb-2">
-        </div>
-    <?php endif; ?>
-    
     <?php if ($post['foto']): ?>
         <div class="mb-3">
             <label class="form-label">Foto Berita Saat Ini</label><br>
@@ -48,28 +41,22 @@ $layout = 'admin';
     <?php endif; ?>
     
     <div class="mb-3">
-        <label class="form-label">Gambar Featured Baru (kosongkan jika tidak ingin mengubah)</label>
-        <input type="file" name="featured_image" class="form-control" accept="image/*">
+        <label class="form-label">Foto Berita</label>
+        <input type="file" name="foto_upload" class="form-control" accept="image/*">
+        <small class="form-text text-muted">Upload foto baru (JPG, PNG, GIF, WEBP - maks. 5MB). Kosongkan jika tidak ingin mengubah.</small>
     </div>
     
-    <div class="mb-3">
-        <label class="form-label">Foto Berita</label>
-        <div class="mb-2">
-            <input type="file" name="foto_upload" class="form-control" accept="image/*">
-            <small class="form-text text-muted">Upload foto baru (JPG, PNG, GIF, WEBP - maks. 5MB). Kosongkan jika tidak ingin mengubah.</small>
+    <?php if ($post['featured_image']): ?>
+        <div class="mb-3">
+            <label class="form-label">Gambar Featured Saat Ini</label><br>
+            <img src="<?= View::asset('uploads/' . $post['featured_image']) ?>" style="max-width: 200px;" class="mb-2">
         </div>
-        <div class="text-muted mb-2" style="font-size: 0.9em;">ATAU</div>
-        <select name="foto" class="form-select">
-            <option value="">-- Pilih Foto yang Sudah Ada --</option>
-            <?php 
-            $beritaImages = getBeritaImages();
-            $currentFoto = $post['foto'] ?? '';
-            foreach ($beritaImages as $image): 
-            ?>
-                <option value="<?= e($image) ?>" <?= $currentFoto === $image ? 'selected' : '' ?>><?= e($image) ?></option>
-            <?php endforeach; ?>
-        </select>
-        <small class="form-text text-muted">Pilih foto dari folder berita yang sudah tersedia</small>
+    <?php endif; ?>
+    
+    <div class="mb-3">
+        <label class="form-label">Gambar Featured</label>
+        <input type="file" name="featured_image" class="form-control" accept="image/*">
+        <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah</small>
     </div>
     
     <div class="mb-3">
