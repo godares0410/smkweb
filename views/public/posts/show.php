@@ -15,11 +15,11 @@ $pageTitle = $post['title'];
                 </p>
                 
                 <?php 
-                // Prioritaskan foto, jika tidak ada gunakan featured_image
-                $imageFile = $post['foto'] ?? $post['featured_image'] ?? null;
+                // Prioritaskan foto, jika tidak ada gunakan foto_tambahan
+                $imageFile = $post['foto'] ?? $post['foto_tambahan'] ?? null;
                 if ($imageFile): 
-                    // Cek apakah foto ada di folder berita atau uploads
-                    $imagePath = $post['foto'] ? 'images/berita/' . $imageFile : 'uploads/' . $imageFile;
+                    // Semua foto disimpan di folder images/berita
+                    $imagePath = 'images/berita/' . $imageFile;
                 ?>
                     <img src="<?= View::asset($imagePath) ?>" class="img-fluid mb-4" alt="<?= e($post['title']) ?>">
                 <?php endif; ?>

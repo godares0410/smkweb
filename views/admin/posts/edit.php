@@ -46,16 +46,16 @@ $layout = 'admin';
         <small class="form-text text-muted">Upload foto baru (JPG, PNG, GIF, WEBP - maks. 5MB). Kosongkan jika tidak ingin mengubah.</small>
     </div>
     
-    <?php if ($post['featured_image']): ?>
+    <?php if ($post['foto_tambahan']): ?>
         <div class="mb-3">
-            <label class="form-label">Gambar Featured Saat Ini</label><br>
-            <img src="<?= View::asset('uploads/' . $post['featured_image']) ?>" style="max-width: 200px;" class="mb-2">
+            <label class="form-label">Foto Tambahan Saat Ini</label><br>
+            <img src="<?= View::asset('images/berita/' . $post['foto_tambahan']) ?>" style="max-width: 200px;" class="mb-2">
         </div>
     <?php endif; ?>
     
     <div class="mb-3">
-        <label class="form-label">Gambar Featured</label>
-        <input type="file" name="featured_image" class="form-control" accept="image/*">
+        <label class="form-label">Foto Tambahan</label>
+        <input type="file" name="foto_tambahan" class="form-control" accept="image/*">
         <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah</small>
     </div>
     

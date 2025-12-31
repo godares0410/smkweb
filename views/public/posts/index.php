@@ -15,11 +15,11 @@ $pageTitle = 'Berita';
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">
                             <?php 
-                            // Prioritaskan foto, jika tidak ada gunakan featured_image
-                            $imageFile = $post['foto'] ?? $post['featured_image'] ?? null;
+                            // Prioritaskan foto, jika tidak ada gunakan foto_tambahan
+                            $imageFile = $post['foto'] ?? $post['foto_tambahan'] ?? null;
                             if ($imageFile): 
-                                // Cek apakah foto ada di folder berita atau uploads
-                                $imagePath = $post['foto'] ? 'images/berita/' . $imageFile : 'uploads/' . $imageFile;
+                                // Semua foto disimpan di folder images/berita
+                                $imagePath = 'images/berita/' . $imageFile;
                             ?>
                                 <img src="<?= View::asset($imagePath) ?>" class="card-img-top" alt="<?= e($post['title']) ?>" style="height: 200px; object-fit: cover;">
                             <?php endif; ?>

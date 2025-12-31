@@ -38,8 +38,8 @@ $layout = 'admin';
     </div>
     
     <div class="mb-3">
-        <label class="form-label">Gambar Featured</label>
-        <input type="file" name="featured_image" class="form-control" accept="image/*">
+        <label class="form-label">Foto Tambahan</label>
+        <input type="file" name="foto_tambahan" class="form-control" accept="image/*">
     </div>
     
     <div class="mb-3">

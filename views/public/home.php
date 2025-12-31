@@ -149,8 +149,8 @@ $pageTitle = 'Beranda';
                     $layoutClass = $layoutClassMap[$type] ?? 'standard';
                     
                     // Get image file
-                    $imageFile = $post['foto'] ?? $post['featured_image'] ?? null;
-                    $imagePath = $post['foto'] ? 'images/berita/' . $imageFile : 'uploads/' . $imageFile;
+                    $imageFile = $post['foto'] ?? $post['foto_tambahan'] ?? null;
+                    $imagePath = $imageFile ? 'images/berita/' . $imageFile : null;
                 ?>
                     <article class="news-masonry-item <?= $layoutClass ?>" data-type="<?= e($type) ?>">
                         <a href="<?= View::url('/post/' . $post['slug']) ?>" class="news-masonry-link">

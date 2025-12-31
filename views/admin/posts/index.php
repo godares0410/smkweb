@@ -85,10 +85,10 @@ $layout = 'admin';
                                 <td><?= $index + 1 ?></td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <?php if ($post['foto'] || $post['featured_image']): ?>
+                                        <?php if ($post['foto'] || $post['foto_tambahan']): ?>
                                             <?php 
-                                            $imageFile = $post['foto'] ?? $post['featured_image'];
-                                            $imagePath = $post['foto'] ? 'images/berita/' . $imageFile : 'uploads/' . $imageFile;
+                                            $imageFile = $post['foto'] ?? $post['foto_tambahan'];
+                                            $imagePath = 'images/berita/' . $imageFile;
                                             ?>
                                             <img src="<?= View::asset($imagePath) ?>" 
                                                  alt="<?= e($post['title']) ?>" 
