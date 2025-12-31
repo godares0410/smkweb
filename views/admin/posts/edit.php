@@ -97,26 +97,17 @@ $layout = 'admin';
     <a href="<?= View::url('/admin/posts') ?>" class="btn btn-secondary">Batal</a>
 </form>
 
-<!-- TinyMCE Editor -->
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<!-- Word Editor - Custom WYSIWYG Editor seperti MS Word -->
+<link rel="stylesheet" href="<?= View::asset('css/word-editor.css') ?>">
+<script src="<?= View::asset('js/color-picker.js') ?>"></script>
+<script src="<?= View::asset('js/word-editor.js') ?>"></script>
 <script>
-tinymce.init({
-    selector: '#content',
-    height: 500,
-    menubar: true,
-    plugins: [
-        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-        'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-    ],
-    toolbar: 'undo redo | formatselect | ' +
-        'bold italic backcolor | alignleft aligncenter ' +
-        'alignright alignjustify | bullist numlist outdent indent | ' +
-        'removeformat | help | code',
-    content_style: 'body { font-family: Arial, sans-serif; font-size: 14px; }',
-    language: 'id',
-    branding: false,
-    promotion: false
+// Sync content before form submit
+document.querySelector('form').addEventListener('submit', function(e) {
+    const editor = document.querySelector('.word-editor-area');
+    if (editor) {
+        document.getElementById('content').value = editor.innerHTML;
+    }
 });
 </script>
 

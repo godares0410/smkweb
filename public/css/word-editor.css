@@ -1,0 +1,221 @@
+/**
+ * Word Editor Styles
+ * Styling untuk custom WYSIWYG editor seperti MS Word
+ */
+
+.word-editor-wrapper {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.word-editor-toolbar {
+    background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #ddd;
+    padding: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    border-radius: 4px 4px 0 0;
+}
+
+.word-editor-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #495057;
+    font-size: 16px;
+    transition: all 0.2s;
+    min-width: 32px;
+    height: 32px;
+    position: relative;
+}
+
+.word-editor-btn:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.word-editor-btn.active {
+    background: #dee2e6;
+    border-color: #adb5bd;
+    color: #212529;
+}
+
+.word-editor-btn:active {
+    background: #ced4da;
+}
+
+.word-editor-separator {
+    width: 1px;
+    background: #ddd;
+    margin: 0 4px;
+    height: 24px;
+    align-self: center;
+}
+
+.word-editor-area {
+    min-height: 500px;
+    padding: 15px;
+    outline: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+    overflow-y: auto;
+    background: #fff;
+}
+
+.word-editor-area.placeholder::before {
+    content: attr(data-placeholder);
+    color: #999;
+    pointer-events: none;
+}
+
+.word-editor-area:focus {
+    outline: none;
+}
+
+/* MS Word-like styling */
+.word-editor-area p {
+    margin: 0 0 10px 0;
+}
+
+.word-editor-area h1,
+.word-editor-area h2,
+.word-editor-area h3,
+.word-editor-area h4,
+.word-editor-area h5,
+.word-editor-area h6 {
+    margin: 15px 0 10px 0;
+    font-weight: bold;
+}
+
+.word-editor-area h1 { font-size: 24px; }
+.word-editor-area h2 { font-size: 20px; }
+.word-editor-area h3 { font-size: 18px; }
+.word-editor-area h4 { font-size: 16px; }
+.word-editor-area h5 { font-size: 14px; }
+.word-editor-area h6 { font-size: 12px; }
+
+.word-editor-area ul,
+.word-editor-area ol {
+    margin: 10px 0;
+    padding-left: 30px;
+}
+
+.word-editor-area li {
+    margin: 5px 0;
+}
+
+.word-editor-area table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0;
+}
+
+.word-editor-area table td,
+.word-editor-area table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.word-editor-area table th {
+    background: #f8f9fa;
+    font-weight: bold;
+}
+
+.word-editor-area img {
+    max-width: 100%;
+    height: auto;
+    margin: 10px 0;
+}
+
+.word-editor-area a {
+    color: #0066cc;
+    text-decoration: underline;
+}
+
+.word-editor-area a:hover {
+    color: #004499;
+}
+
+.word-editor-area blockquote {
+    border-left: 4px solid #ddd;
+    margin: 10px 0;
+    padding-left: 15px;
+    color: #666;
+    font-style: italic;
+}
+
+.word-editor-area code {
+    background: #f4f4f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+}
+
+.word-editor-area pre {
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 10px 0;
+}
+
+.word-editor-area pre code {
+    background: none;
+    padding: 0;
+}
+
+.word-editor-select {
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.word-editor-select:hover {
+    border-color: #adb5bd;
+}
+
+.word-editor-source {
+    width: 100%;
+    min-height: 500px;
+    padding: 15px;
+    border: none;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    background: #f8f9fa;
+    resize: vertical;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .word-editor-toolbar {
+        padding: 6px;
+    }
+    
+    .word-editor-btn {
+        padding: 4px 6px;
+        font-size: 14px;
+        min-width: 28px;
+        height: 28px;
+    }
+    
+    .word-editor-area {
+        min-height: 400px;
+        padding: 10px;
+        font-size: 13px;
+    }
+}
+

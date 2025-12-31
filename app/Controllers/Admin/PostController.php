@@ -1,7 +1,5 @@
 <?php
 
-
-
 class PostController extends Controller {
     private $postModel;
 
@@ -56,12 +54,7 @@ class PostController extends Controller {
 
         $this->postModel->create($data);
         
-        // Redirect back to dashboard if submitted from modal
-        $redirectUrl = Request::post('from_dashboard') 
-            ? url('/admin/dashboard') 
-            : url('/admin/posts');
-        
-        Response::with('success', 'Post berhasil dibuat')->redirect($redirectUrl);
+        Response::with('success', 'Post berhasil dibuat')->redirect(url('/admin/posts'));
     }
 
     public function edit($id) {
@@ -163,12 +156,7 @@ class PostController extends Controller {
 
         $this->postModel->update($id, $data);
         
-        // Redirect back to dashboard if submitted from modal
-        $redirectUrl = Request::post('from_dashboard') 
-            ? url('/admin/dashboard') 
-            : url('/admin/posts');
-        
-        Response::with('success', 'Post berhasil diupdate')->redirect($redirectUrl);
+        Response::with('success', 'Post berhasil diupdate')->redirect(url('/admin/posts'));
     }
 
     /**

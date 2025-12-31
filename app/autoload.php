@@ -10,7 +10,22 @@ spl_autoload_register(function ($class) {
         return;
     }
     
+    // For controller classes, check if we're in admin route
+    // If so, try Admin folder first to avoid loading wrong controller
+    $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
+    $uri = parse_url($requestUri, PHP_URL_PATH);
+    $isAdminRoute = strpos($uri, '/admin/') === 0;
+    
     // Try Controllers folder (handle namespaces)
+    if ($isAdminRoute && strpos($class, 'Controller') !== false) {
+        // For admin routes, try Admin folder first
+        $adminFile = $baseDir . 'Controllers/Admin/' . str_replace('\\', '/', $class) . '.php';
+        if (file_exists($adminFile)) {
+            require $adminFile;
+            return;
+        }
+    }
+    
     $file = $baseDir . 'Controllers/' . str_replace('\\', '/', $class) . '.php';
     if (file_exists($file)) {
         require $file;

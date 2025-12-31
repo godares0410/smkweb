@@ -58,14 +58,18 @@ class Router {
         }
         $uri = $uri ?: '/';
         
-        // Debug logging for AJAX requests
+        // Debug logging for AJAX requests and form submissions
         $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
-        if ($isAjax) {
+        $isFormSubmit = $method === 'POST' || $method === 'PUT';
+        
+        if ($isAjax || $isFormSubmit) {
             error_log("=== ROUTER DISPATCH ===");
-            error_log("Method: $method");
-            error_log("URI: $uri");
-            error_log("BasePath: $basePath");
-            error_log("REQUEST_URI: " . ($_SERVER['REQUEST_URI'] ?? 'N/A'));
+            error_log("REQUEST_URI = " . $requestUri);
+            error_log("PARSED URI = " . parse_url($requestUri, PHP_URL_PATH));
+            error_log("BASE PATH  = " . ($basePath ?: '(empty)'));
+            error_log("FINAL URI  = " . $uri);
+            error_log("METHOD     = " . $method);
+            error_log("_POST _method = " . ($_POST['_method'] ?? 'N/A'));
             error_log("Total routes: " . count($this->routes));
         }
 
@@ -112,43 +116,57 @@ class Router {
                     $controller = $handler['controller'];
                     $action = $handler['action'];
                     
-                    // Try to load controller if not already loaded
-                    if (!class_exists($controller)) {
-                        // Try Admin namespace first
+                    // Determine if this is an admin route
+                    $isAdminRoute = strpos($uri, '/admin/') === 0;
+                    $controllerFile = null;
+                    
+                    // For admin routes, ALWAYS try Admin folder first
+                    if ($isAdminRoute) {
                         $controllerFile = __DIR__ . '/Controllers/Admin/' . $controller . '.php';
                         if (file_exists($controllerFile)) {
-                            require $controllerFile;
+                            // Unset/clear any previously loaded class with same name
+                            // Then require the Admin version
+                            require_once $controllerFile;
                         } else {
-                            // Try regular controllers
+                            // Fallback to regular controllers if Admin doesn't exist
                             $controllerFile = __DIR__ . '/Controllers/' . $controller . '.php';
                             if (file_exists($controllerFile)) {
-                                require $controllerFile;
-                            }
-                        }
-                    }
-                    
-                    if (class_exists($controller)) {
-                        $controllerInstance = new $controller();
-                        if (method_exists($controllerInstance, $action)) {
-                            if ($isAjax) {
-                                error_log("Calling controller method: $controller::$action");
-                            }
-                            
-                            // Clear any output buffers before calling controller method
-                            while (ob_get_level() > 0) {
-                                ob_end_clean();
-                            }
-                            
-                            call_user_func_array([$controllerInstance, $action], $matches);
-                            return;
-                        } else {
-                            if ($isAjax) {
-                                error_log("Method $action does not exist in $controller");
+                                require_once $controllerFile;
                             }
                         }
                     } else {
+                        // For public routes, use regular controllers
+                        $controllerFile = __DIR__ . '/Controllers/' . $controller . '.php';
+                        if (file_exists($controllerFile)) {
+                            require_once $controllerFile;
+                        }
+                    }
+                    
+                    // Check if controller class exists
+                    if (!class_exists($controller)) {
                         if ($isAjax) {
-                            error_log("Controller class $controller does not exist. Tried: " . ($controllerFile ?? 'N/A'));
+                            error_log("Controller class '$controller' not found. File: " . ($controllerFile ?? 'N/A'));
+                        }
+                        continue; // Skip to next route
+                    }
+                    
+                    // Instantiate controller
+                    $controllerInstance = new $controller();
+                    if (method_exists($controllerInstance, $action)) {
+                        if ($isAjax) {
+                            error_log("Calling controller method: $controller::$action");
+                        }
+                        
+                        // Clear any output buffers before calling controller method
+                        while (ob_get_level() > 0) {
+                            ob_end_clean();
+                        }
+                        
+                        call_user_func_array([$controllerInstance, $action], $matches);
+                        return;
+                    } else {
+                        if ($isAjax) {
+                            error_log("Method $action does not exist in $controller");
                         }
                     }
                 }
@@ -190,8 +208,15 @@ class Router {
     
     /**
      * Get base path of the application
+     * Uses the same logic as helpers.php getBasePath() for consistency
      */
     private function getBasePath() {
+        // Use the global getBasePath() function if available
+        if (function_exists('getBasePath')) {
+            return getBasePath();
+        }
+        
+        // Fallback to same logic as helpers.php
         static $basePath = null;
         
         if ($basePath !== null) {
@@ -226,3 +251,4 @@ class Router {
         return $basePath;
     }
 }
+
