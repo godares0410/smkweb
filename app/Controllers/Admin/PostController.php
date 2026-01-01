@@ -34,12 +34,12 @@ class PostController extends Controller {
             'status' => Request::post('status', 'draft')
         ];
 
-        // Handle file upload foto tambahan - check $_FILES directly for better compatibility
-        if (isset($_FILES['foto_tambahan']) && !empty($_FILES['foto_tambahan']['name'])) {
-            $fotoTambahanFile = $_FILES['foto_tambahan'];
+        // Handle foto berita FIRST - priority: upload > select
+        if (isset($_FILES['foto_upload']) && !empty($_FILES['foto_upload']['name'])) {
+            $file = $_FILES['foto_upload'];
             
             // Check upload error
-            if ($fotoTambahanFile['error'] !== UPLOAD_ERR_OK) {
+            if ($file['error'] !== UPLOAD_ERR_OK) {
                 $errorMessages = [
                     UPLOAD_ERR_INI_SIZE => 'File terlalu besar (melebihi upload_max_filesize)',
                     UPLOAD_ERR_FORM_SIZE => 'File terlalu besar (melebihi MAX_FILE_SIZE)',
@@ -49,44 +49,83 @@ class PostController extends Controller {
                     UPLOAD_ERR_CANT_WRITE => 'Gagal menulis file ke disk',
                     UPLOAD_ERR_EXTENSION => 'Upload dihentikan oleh extension'
                 ];
-                $errorMsg = $errorMessages[$fotoTambahanFile['error']] ?? 'Error upload tidak diketahui: ' . $fotoTambahanFile['error'];
-                error_log("foto_tambahan upload error: " . $errorMsg);
-            } else {
-                $uploadResult = $this->uploadFotoBerita($fotoTambahanFile);
-                if ($uploadResult) {
-                    $data['foto_tambahan'] = $uploadResult;
-                }
+                $errorMsg = $errorMessages[$file['error']] ?? 'Error upload tidak diketahui: ' . $file['error'];
+                Response::with('error', $errorMsg)->redirect(url('/admin/posts/create'));
+                return;
             }
-        }
-
-        // Insert post first
-        $postId = $this->postModel->create($data);
-        
-        // If foto_tambahan was uploaded but not in $data, update using raw SQL
-        if (isset($_FILES['foto_tambahan']) && !empty($_FILES['foto_tambahan']['name']) && empty($data['foto_tambahan']) && $postId) {
-            $fotoTambahanFile = $_FILES['foto_tambahan'];
-            if ($fotoTambahanFile['error'] === UPLOAD_ERR_OK) {
-                $uploadResult = $this->uploadFotoBerita($fotoTambahanFile);
-                if ($uploadResult) {
-                    $db = Database::getInstance();
-                    $sql = "UPDATE posts SET foto_tambahan = :foto_tambahan WHERE id = :id";
-                    $db->query($sql, [
-                        'foto_tambahan' => $uploadResult,
-                        'id' => $postId
-                    ]);
-                    error_log("foto_tambahan updated via raw SQL (store fallback): " . $uploadResult);
-                }
+            
+            // Validate file type
+            $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            $allowedExtensions = ['jpeg', 'jpg', 'png', 'gif', 'webp'];
+            $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            
+            if (!in_array($file['type'], $allowedTypes) || !in_array($extension, $allowedExtensions)) {
+                Response::with('error', 'Format file tidak didukung. Gunakan JPEG, PNG, GIF, atau WEBP')->redirect(url('/admin/posts/create'));
+                return;
             }
-        }
-
-        // Handle foto berita - priority: upload > select
-        if (Request::file('foto_upload')) {
-            $uploadResult = $this->uploadFotoBerita(Request::file('foto_upload'));
+            
+            // Validate file size (max 5MB)
+            if ($file['size'] > 5 * 1024 * 1024) {
+                Response::with('error', 'Ukuran file terlalu besar. Maksimal 5MB')->redirect(url('/admin/posts/create'));
+                return;
+            }
+            
+            $uploadResult = $this->uploadFotoBerita($file);
             if ($uploadResult) {
                 $data['foto'] = $uploadResult;
             }
         } elseif (Request::post('foto')) {
             $data['foto'] = Request::post('foto');
+        }
+
+        // Handle file upload foto tambahan - check $_FILES directly (like absensi)
+        if (isset($_FILES['foto_tambahan']) && !empty($_FILES['foto_tambahan']['name'])) {
+            $file = $_FILES['foto_tambahan'];
+            
+            // Check upload error
+            if ($file['error'] !== UPLOAD_ERR_OK) {
+                $errorMessages = [
+                    UPLOAD_ERR_INI_SIZE => 'File terlalu besar (melebihi upload_max_filesize)',
+                    UPLOAD_ERR_FORM_SIZE => 'File terlalu besar (melebihi MAX_FILE_SIZE)',
+                    UPLOAD_ERR_PARTIAL => 'File hanya ter-upload sebagian',
+                    UPLOAD_ERR_NO_FILE => 'Tidak ada file yang di-upload',
+                    UPLOAD_ERR_NO_TMP_DIR => 'Folder temporary tidak ditemukan',
+                    UPLOAD_ERR_CANT_WRITE => 'Gagal menulis file ke disk',
+                    UPLOAD_ERR_EXTENSION => 'Upload dihentikan oleh extension'
+                ];
+                $errorMsg = $errorMessages[$file['error']] ?? 'Error upload tidak diketahui: ' . $file['error'];
+                Response::with('error', $errorMsg)->redirect(url('/admin/posts/create'));
+                return;
+            }
+            
+            // Validate file type
+            $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            $allowedExtensions = ['jpeg', 'jpg', 'png', 'gif', 'webp'];
+            $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            
+            if (!in_array($file['type'], $allowedTypes) || !in_array($extension, $allowedExtensions)) {
+                Response::with('error', 'Format file tidak didukung. Gunakan JPEG, PNG, GIF, atau WEBP')->redirect(url('/admin/posts/create'));
+                return;
+            }
+            
+            // Validate file size (max 5MB)
+            if ($file['size'] > 5 * 1024 * 1024) {
+                Response::with('error', 'Ukuran file terlalu besar. Maksimal 5MB')->redirect(url('/admin/posts/create'));
+                return;
+            }
+            
+            $uploadResult = $this->uploadFotoBerita($file);
+            if ($uploadResult) {
+                $data['foto_tambahan'] = $uploadResult;
+            }
+        }
+
+        // Insert post with all data including foto and foto_tambahan
+        $postId = $this->postModel->create($data);
+        
+        if (!$postId) {
+            Response::with('error', 'Gagal menyimpan post')->redirect(url('/admin/posts/create'));
+            return;
         }
         
         Response::with('success', 'Post berhasil dibuat')->redirect(url('/admin/posts'));

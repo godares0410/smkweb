@@ -15,13 +15,19 @@ $pageTitle = $post['title'];
                 </p>
                 
                 <?php 
-                // Prioritaskan foto, jika tidak ada gunakan foto_tambahan
-                $imageFile = $post['foto'] ?? $post['foto_tambahan'] ?? null;
-                if ($imageFile): 
-                    // Semua foto disimpan di folder images/berita
-                    $imagePath = 'images/berita/' . $imageFile;
+                // Tampilkan foto utama jika ada
+                if (!empty($post['foto'])): 
+                    $imagePath = 'images/berita/' . $post['foto'];
                 ?>
                     <img src="<?= View::asset($imagePath) ?>" class="img-fluid mb-4" alt="<?= e($post['title']) ?>">
+                <?php endif; ?>
+                
+                <?php 
+                // Tampilkan foto tambahan jika ada
+                if (!empty($post['foto_tambahan'])): 
+                    $imagePathTambahan = 'images/berita/' . $post['foto_tambahan'];
+                ?>
+                    <img src="<?= View::asset($imagePathTambahan) ?>" class="img-fluid mb-4" alt="<?= e($post['title']) ?> - Foto Tambahan">
                 <?php endif; ?>
                 
                 <div class="content">
