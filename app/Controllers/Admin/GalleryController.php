@@ -49,9 +49,21 @@ class GalleryController extends Controller {
     public function edit($id) {
         $item = $this->galleryModel->findById($id);
         if (!$item) {
+            // Check if it's a JSON request
+            if (Request::isAjax() || Request::get('json') || Request::get('format') === 'json') {
+                $this->json(['success' => false, 'message' => 'Item tidak ditemukan'], 404);
+                return;
+            }
             Response::with('error', 'Item tidak ditemukan')->redirect(url('/admin/gallery'));
             return;
         }
+        
+        // Return JSON if requested (for modal)
+        if (Request::isAjax() || Request::get('json') || Request::get('format') === 'json') {
+            $this->json(['success' => true, 'item' => $item]);
+            return;
+        }
+        
         $this->view('admin.gallery.edit', ['item' => $item]);
     }
 

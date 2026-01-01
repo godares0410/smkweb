@@ -25,11 +25,6 @@
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a class="nav-link text-white" href="<?= View::url('/admin/pages') ?>">
-                        <i class="bi bi-file-text"></i> Halaman
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
                     <a class="nav-link text-white" href="<?= View::url('/admin/gallery') ?>">
                         <i class="bi bi-images"></i> Galeri
                     </a>

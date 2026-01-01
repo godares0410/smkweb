@@ -141,48 +141,8 @@ $router->delete('/admin/posts/{id}', [
     'middleware' => ['auth']
 ]);
 
-// Admin Routes - Pages
-$router->get('/admin/pages', [
-    'controller' => 'PageController',
-    'action' => 'index',
-    'middleware' => ['auth']
-]);
-
-$router->get('/admin/pages/create', [
-    'controller' => 'PageController',
-    'action' => 'create',
-    'middleware' => ['auth']
-]);
-
-$router->post('/admin/pages', [
-    'controller' => 'PageController',
-    'action' => 'store',
-    'middleware' => ['auth']
-]);
-
-$router->get('/admin/pages/{id}/edit', [
-    'controller' => 'PageController',
-    'action' => 'edit',
-    'middleware' => ['auth']
-]);
-
-$router->post('/admin/pages/{id}', [
-    'controller' => 'PageController',
-    'action' => 'update',
-    'middleware' => ['auth']
-]);
-
-$router->put('/admin/pages/{id}', [
-    'controller' => 'PageController',
-    'action' => 'update',
-    'middleware' => ['auth']
-]);
-
-$router->delete('/admin/pages/{id}', [
-    'controller' => 'PageController',
-    'action' => 'delete',
-    'middleware' => ['auth']
-]);
+// Admin Routes - Pages (DISABLED)
+// Routes untuk pages telah dihapus
 
 // Admin Routes - Gallery
 $router->get('/admin/gallery', [
