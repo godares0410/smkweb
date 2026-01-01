@@ -14,7 +14,7 @@ $pageTitle = 'Galeri Foto';
                 <?php foreach ($gallery as $item): ?>
                     <div class="col-md-4 mb-4">
                         <div class="card">
-                            <img src="<?= View::asset('uploads/' . $item['image']) ?>" class="card-img-top" alt="<?= e($item['title']) ?>" style="height: 300px; object-fit: cover;">
+                            <img src="<?= View::asset('images/galeri/' . $item['image']) ?>" class="card-img-top" alt="<?= e($item['title']) ?>" style="height: 300px; object-fit: cover;">
                             <div class="card-body">
                                 <h5 class="card-title"><?= e($item['title']) ?></h5>
                                 <?php if ($item['description']): ?>

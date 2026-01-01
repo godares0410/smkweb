@@ -23,7 +23,7 @@ $layout = 'admin';
         <?php foreach ($gallery as $item): ?>
             <div class="col-md-3 mb-4">
                 <div class="card">
-                    <img src="<?= View::asset('uploads/' . $item['image']) ?>" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    <img src="<?= View::asset('images/galeri/' . $item['image']) ?>" class="card-img-top" style="height: 200px; object-fit: cover;">
                     <div class="card-body">
                         <h5><?= e($item['title']) ?></h5>
                         <button onclick="openEditModal(<?= $item['id'] ?>)" class="btn btn-sm btn-warning">Edit</button>
@@ -283,7 +283,7 @@ function openEditModal(id) {
             // Handle current image
             if (item.image) {
                 document.getElementById('edit_current_image').style.display = 'block';
-                document.getElementById('edit_image_preview').src = '<?= View::asset('uploads/') ?>' + item.image;
+                document.getElementById('edit_image_preview').src = '<?= View::asset('images/galeri/') ?>' + item.image;
             } else {
                 document.getElementById('edit_current_image').style.display = 'none';
             }
