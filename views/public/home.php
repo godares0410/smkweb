@@ -218,8 +218,13 @@ $pageTitle = 'Beranda';
                     $layoutClass = $layoutClassMap[$type] ?? 'square';
                 ?>
                     <div class="gallery-collage-item <?= $layoutClass ?>" data-type="<?= e($type) ?>" data-aos="fade-up" data-aos-delay="<?= $index * 50 ?>">
-                        <div class="gallery-collage-card">
-                            <img src="<?= View::asset('uploads/' . $item['image']) ?>" alt="<?= e($item['title']) ?>">
+                        <div class="gallery-collage-card" 
+                             data-bs-toggle="modal" 
+                             data-bs-target="#lightboxModal" 
+                             data-bs-src="<?= View::asset('images/galeri/' . $item['image']) ?>" 
+                             data-bs-title="<?= e($item['title']) ?>" 
+                             data-bs-description="<?= e($item['description']) ?>">
+                            <img src="<?= View::asset('images/galeri/' . $item['image']) ?>" alt="<?= e($item['title']) ?>">
                             <div class="gallery-collage-overlay">
                                 <div class="gallery-collage-content">
                                     <div class="gallery-icon">

@@ -1,6 +1,6 @@
 // Main JavaScript for public pages
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize Carousel with auto-play (5 seconds interval)
     const carouselElement = document.querySelector('#heroCarousel');
     if (carouselElement) {
@@ -9,13 +9,13 @@ document.addEventListener('DOMContentLoaded', function() {
             ride: 'carousel',
             wrap: true // Loop carousel
         });
-        
+
         // Ensure carousel continues auto-playing
-        carouselElement.addEventListener('mouseenter', function() {
+        carouselElement.addEventListener('mouseenter', function () {
             carousel.pause();
         });
-        
-        carouselElement.addEventListener('mouseleave', function() {
+
+        carouselElement.addEventListener('mouseleave', function () {
             carousel.cycle();
         });
     }
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const dropDownMenu = document.querySelector('.dropdown_menu');
 
     if (toggleBtn && dropDownMenu) {
-        toggleBtn.onclick = function() {
+        toggleBtn.onclick = function () {
             dropDownMenu.classList.toggle('open');
             const isOpen = dropDownMenu.classList.contains('open');
 
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 const targetId = href.substring(1);
                 const targetElement = document.getElementById(targetId);
-                
+
                 if (targetElement) {
                     // Close mobile menu if open
                     if (dropDownMenu && dropDownMenu.classList.contains('open')) {
@@ -53,11 +53,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             toggleBtnIcon.classList = 'fa-solid fa-bars';
                         }
                     }
-                    
+
                     // Calculate offset for fixed header
                     const headerHeight = document.querySelector('header').offsetHeight;
                     const targetPosition = targetElement.offsetTop - headerHeight;
-                    
+
                     window.scrollTo({
                         top: targetPosition,
                         behavior: 'smooth'
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
         rootMargin: '0px 0px -50px 0px'
     };
 
-    const observer = new IntersectionObserver(function(entries) {
+    const observer = new IntersectionObserver(function (entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.style.opacity = '1';
@@ -154,6 +154,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.querySelectorAll('img[data-src]').forEach(img => {
             imageObserver.observe(img);
+        });
+    }
+
+    // Lightbox Functionality
+    const lightboxModal = document.getElementById('lightboxModal');
+    if (lightboxModal) {
+        // Handle modal show event
+        lightboxModal.addEventListener('show.bs.modal', function (event) {
+            // Button/Element that triggered the modal
+            const triggerEl = event.relatedTarget;
+
+            // Extract info from data-bs-* attributes
+            const src = triggerEl.getAttribute('data-bs-src');
+            const title = triggerEl.getAttribute('data-bs-title');
+            const description = triggerEl.getAttribute('data-bs-description');
+
+            // Update the modal's content
+            const modalImage = lightboxModal.querySelector('.lightbox-image');
+            const modalCaption = lightboxModal.querySelector('.lightbox-caption');
+
+            modalImage.src = src;
+
+            let captionHtml = '';
+            if (title) captionHtml += `<h5 class="mb-1">${title}</h5>`;
+            if (description) captionHtml += `<p class="mb-0 small opacity-75">${description}</p>`;
+
+            modalCaption.innerHTML = captionHtml;
         });
     }
 });

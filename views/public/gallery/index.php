@@ -13,8 +13,16 @@ $pageTitle = 'Galeri Foto';
             <?php else: ?>
                 <?php foreach ($gallery as $item): ?>
                     <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img src="<?= View::asset('images/galeri/' . $item['image']) ?>" class="card-img-top" alt="<?= e($item['title']) ?>" style="height: 300px; object-fit: cover;">
+                        <div class="card h-100 shadow-sm border-0 transition-hover">
+                            <img src="<?= View::asset('images/galeri/' . $item['image']) ?>" 
+                                 class="card-img-top" 
+                                 alt="<?= e($item['title']) ?>" 
+                                 style="height: 300px; object-fit: cover; cursor: pointer;"
+                                 data-bs-toggle="modal" 
+                                 data-bs-target="#lightboxModal" 
+                                 data-bs-src="<?= View::asset('images/galeri/' . $item['image']) ?>"
+                                 data-bs-title="<?= e($item['title']) ?>"
+                                 data-bs-description="<?= e($item['description']) ?>">
                             <div class="card-body">
                                 <h5 class="card-title"><?= e($item['title']) ?></h5>
                                 <?php if ($item['description']): ?>

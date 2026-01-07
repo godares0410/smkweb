@@ -215,6 +215,10 @@ function submitCreateForm() {
     
     fetch(form.action, {
         method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        },
         body: formData
     })
     .then(response => {
@@ -240,6 +244,10 @@ function submitEditForm() {
     
     fetch(form.action, {
         method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        },
         body: formData
     })
     .then(response => {

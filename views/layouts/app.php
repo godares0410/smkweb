@@ -124,8 +124,27 @@
         </div>
     </footer>
 
+    <!-- Lightbox Modal -->
+    <div class="modal fade" id="lightboxModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content bg-transparent border-0 shadow-none">
+                <div class="modal-body p-0 text-center">
+                    <div class="d-inline-block position-relative">
+                        <button type="button" class="position-absolute top-0 end-0 m-2 border-0 bg-transparent text-white" 
+                                data-bs-dismiss="modal" aria-label="Close"
+                                style="z-index: 1056; font-size: 2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); opacity: 0.9; transition: transform 0.2s ease;">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <img src="" class="img-fluid rounded shadow-lg lightbox-image" style="max-height: 90vh;" alt="">
+                    </div>
+                    <div class="lightbox-caption text-white mt-3 text-center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="<?= View::asset('js/main.js') ?>"></script>
+    <script src="<?= View::asset('js/main.js') ?>?v=<?= time() ?>"></script>
 </body>
 </html>
 
